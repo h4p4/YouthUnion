@@ -1,0 +1,94 @@
+﻿<Window x:Class="YouthUnion.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:YouthUnion"
+        mc:Ignorable="d"
+        Title="Российский союз молодежи" Height="450" Width="800" FontSize="18">
+    <Window.Resources>
+        <Style TargetType="{x:Type DataGrid}">
+            <Setter Property="BorderBrush" Value="LightGray" />
+            <Setter Property="HorizontalGridLinesBrush" Value="LightGray" />
+            <Setter Property="VerticalGridLinesBrush" Value="LightGray" />
+            <Setter Property="ColumnWidth" Value="*" />
+            <Setter Property="CanUserResizeColumns" Value="False" />
+            <Setter Property="CanUserResizeRows" Value="False" />
+            <Setter Property="CanUserReorderColumns" Value="False" />
+            <Setter Property="CanUserSortColumns" Value="True" />
+            <Setter Property="IsReadOnly" Value="False" />
+            <Setter Property="AutoGenerateColumns" Value="True" />
+            <Setter Property="SelectionMode" Value="Extended" />
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="MinRowHeight" Value="40" />
+            <Setter Property="HeadersVisibility" Value="Column" />
+            <Setter Property="CanUserDeleteRows" Value="True" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Grid.ColumnSpan" Value="4" />
+            <Setter Property="Grid.Row" Value="1" />
+        </Style>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Padding" Value="10 5" />
+            <Setter Property="Margin" Value="0 10" />
+        </Style>
+    </Window.Resources>
+    <Window.DataContext>
+        <local:MainViewModel />
+    </Window.DataContext>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ComboBox HorizontalAlignment="Left"
+                      x:Name="MainComboBox"
+                      SelectionChanged="OnComboBoxSelectionChanged">
+                <ComboBoxItem Content="Сотрудники" IsSelected="True" />
+                <ComboBoxItem Content="Мероприятия" />
+                <ComboBoxItem Content="Назначения" />
+            </ComboBox>
+
+            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Orientation="Horizontal"
+                        Visibility="{Binding ElementName=EventsDataGrid, Path=Visibility}">
+                <TextBox Text="{Binding EventNameFilter}" MinWidth="100"/>
+                <ComboBox ItemsSource="{Binding Participants}" SelectedItem="{Binding SelectedParticipant}"
+                          x:Name="ParticipantsComboBox" />
+                <ComboBox ItemsSource="{Binding Months}" SelectedItem="{Binding SelectedMonth}" />
+                <ComboBox>
+                    <ComboBoxItem Content="Все" IsSelected="{Binding ShowAll}" />
+                    <ComboBoxItem Content="Текущие" IsSelected="{Binding ShowCurrent}" />
+                    <ComboBoxItem Content="Прошедшие" IsSelected="{Binding ShowPast}" />
+                    <ComboBoxItem Content="Предстоящие" IsSelected="{Binding ShowFuture}" />
+                </ComboBox>
+            </StackPanel>
+
+            <DataGrid x:Name="ParticipantDataGrid"
+                      AutoGeneratingColumn="OnAutoGeneratingColumn"
+                      ItemsSource="{Binding Participants}" />
+            <DataGrid x:Name="EventsDataGrid"
+                      AutoGeneratingColumn="OnAutoGeneratingColumn"
+                      ItemsSource="{Binding Events}" Visibility="Collapsed" />
+            <DataGrid x:Name="AssignmentDataGrid"
+                      AutoGeneratingColumn="OnAutoGeneratingColumn"
+                      ItemsSource="{Binding Assignments}" Visibility="Collapsed" />
+
+        </Grid>
+        <Button HorizontalAlignment="Right"
+                Content="Сохранить" Grid.Row="2"
+                Command="{Binding SaveCommand}" />
+        <Button HorizontalAlignment="Left"
+                Click="GenerateReportButtonClick"
+                Content="Сформировать отчёт" Grid.Row="2"
+                Visibility="{Binding ElementName=EventsDataGrid, Path=Visibility}" />
+    </Grid>
+</Window>
